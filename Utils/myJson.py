@@ -38,31 +38,31 @@ class myJson():
             json.dump(data,mydata)
     
 
-def read_json():
-    with open("mycoord.json") as file:
-        data = json.load(file)
-    
-    return data["parameters"]
+    def read_json():
+        with open("mycoord.json") as file:
+            data = json.load(file)
+        
+        return data["parameters"]
 
 
 
-def create_list_files():
-    """
-    Create a variable that contains the liste of files that i have to read
-    """
+    def create_list_files():
+        """
+        Create a variable that contains the liste of files that i have to read
+        """
 
-    my_files:List= []
-    mynumber:str = ""
-    extension = ".tif"
+        my_files:List= []
+        mynumber:str = ""
+        extension = ".tif"
 
-    for x in range(1,44):
-        if x < 10:
-            mynumber = "0"+str(x)
-            mypath = f"zip+file:.///geo/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
-        else:
-            mynumber = str(x)
-            mypath = f"zip+file:.///geo/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
+        for x in range(1,44):
+            if x < 10:
+                mynumber = "0"+str(x)
+                mypath = f"zip+file:.///geo/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
+            else:
+                mynumber = str(x)
+                mypath = f"zip+file:.///geo/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
 
-        my_files.append(f"{mypath}DHMVIIDSMRAS1m_k{mynumber}{extension}")
+            my_files.append(f"{mypath}DHMVIIDSMRAS1m_k{mynumber}{extension}")
 
-    return my_files
+        return my_files

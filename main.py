@@ -2,119 +2,24 @@ import rasterio as rio
 from typing import List
 import pandas as pd
 import geopandas as gpd
-import pyproj
-from geopy.geocoders import Nominatim
 import numpy as np
+from Utils.coord import Coord
 from Utils.myJson import myJson
 from Utils.front import Front
 from Utils.box import Box
 
-from plotly.offline import download_plotlyjs, init_notebook_mode,plot,iplot
+#from plotly.offline import download_plotlyjs, init_notebook_mode,plot,iplot
 #import cufflinks as cf
 
 
 #cf.go_offline()
 
 
-def conv_coord_system_location(latitude:float,longitude:float,address_system:int,belgian_system:int)->List[float]:
-
-    coord_address:List = []
-
-    belgian_coord:pyproj = pyproj.Transformer.from_crs(address_system, belgian_system)
-
-    #lat_address,lon_address = belgian_coord.transform(location.latitude,location.longitude)
-
-    lat_address,lon_address = belgian_coord.transform(latitude,longitude)
-
-    coord_address.append(lat_address)
-    coord_address.append(lon_address)
-
-    return coord_address
-
-
-
-def create_coord(my_address:str)-> List[float]:
-
-    address = my_address
-
-    geolocator = Nominatim(user_agent="myhome")
-
-    location = geolocator.geocode(address)
-
-    address_system:int = 4326
-    
-    #belgian_system:int = int(str(map.meta["crs"]).split(":")[1])
-
-    belgian_system:int = 31370
-
-    #location.address
-
-    #print(location.raw)
-
-    #local_boundingbox = location.raw["boundingbox"]
-
-    coord = conv_coord_system_location(location.latitude,location.longitude,address_system,belgian_system)
-
-    return coord
-
-
-
-
-
-
-
-def process_input(my_address)-> List:
-
-    lat,lon = create_coord(my_address)
-
-    sbox = Box.create_s_box(lat,lon,30,30)
-
-    return sbox
-
-
-def inside_files(small_box):
-
-    data = myJson.read_json()
-
-    result = 0
-
-    for e in data:
-        
-        big_box = []
-
-        if result == 0:
-            bleft = e["Left"]
-            bbottom = e["Bottom"]
-            bright = e["Right"]
-            btop = e["Top"]
-
-            big_box.append(bleft)
-            big_box.append(bbottom)
-            big_box.append(bright)
-            big_box.append(btop)
-            
-            result = Box.test_box(big_box,small_box)
-
-            if result == 0:
-                path = 0
-            else:
-                path = e["Path"]
-                print("The file is : ",e["Name"])
-                break
-
-
-    print("SMALL BOX",small_box)
-    print("BIG BOX",big_box)
-
-    return path
-
-
-
 myaddress = input("Wich address do you want to see ? : ")
 
-sbox = process_input(myaddress)
+sbox = Coord.process_input(myaddress)
 
-path = inside_files(sbox)
+path = Coord.inside_files(sbox)
 
 if path != 0:
     source = rio.open(path)
