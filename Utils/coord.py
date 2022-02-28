@@ -1,6 +1,8 @@
 from typing import List
 import pyproj
 from geopy.geocoders import Nominatim
+from Utils.box import Box
+from Utils.myJson import myJson
 
 class Coord():
 
@@ -21,7 +23,7 @@ class Coord():
 
 
 
-    def create_coord(self,my_address:str)-> List[float]:
+    def create_coord(my_address:str)-> List[float]:
 
         address = my_address
 
@@ -41,14 +43,14 @@ class Coord():
 
         #local_boundingbox = location.raw["boundingbox"]
 
-        coord = self.conv_coord_system_location(location.latitude,location.longitude,address_system,belgian_system)
+        coord = Coord.conv_coord_system_location(location.latitude,location.longitude,address_system,belgian_system)
 
         return coord
 
 
     def process_input(my_address)-> List:
 
-        lat,lon = create_coord(my_address)
+        lat,lon = Coord.create_coord(my_address)
 
         sbox = Box.create_s_box(lat,lon,30,30)
 

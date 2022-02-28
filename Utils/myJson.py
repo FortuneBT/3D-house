@@ -4,9 +4,9 @@ from typing import List
 
 class myJson():
 
-    def create_coord_json(self):
+    def create_coord_json():
 
-        mylist = self.create_list_files()
+        mylist = myJson.create_list_files()
 
         data = dict()
         data["parameters"] = []
@@ -58,11 +58,13 @@ class myJson():
         for x in range(1,44):
             if x < 10:
                 mynumber = "0"+str(x)
-                mypath = f"zip+file:.///geo/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
+                #mypath = f"zip+file:.///geo/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
+                mypath = f"zip+file:..///Regions-Brux-Fland/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
+
             else:
                 mynumber = str(x)
-                mypath = f"zip+file:.///geo/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
-
+                #mypath = f"zip+file:.///geo/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
+                mypath = f"zip+file:..///Regions-Brux-Fland/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
             my_files.append(f"{mypath}DHMVIIDSMRAS1m_k{mynumber}{extension}")
 
         return my_files
