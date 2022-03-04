@@ -16,8 +16,6 @@ class Box():
         box.append(big_right)
         box.append(big_top)
 
-        #source.bounds
-
         return box
 
 

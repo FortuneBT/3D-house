@@ -12,8 +12,6 @@ class Coord():
 
         belgian_coord:pyproj = pyproj.Transformer.from_crs(address_system, belgian_system)
 
-        #lat_address,lon_address = belgian_coord.transform(location.latitude,location.longitude)
-
         lat_address,lon_address = belgian_coord.transform(latitude,longitude)
 
         coord_address.append(lat_address)
@@ -32,16 +30,8 @@ class Coord():
         location = geolocator.geocode(address)
 
         address_system:int = 4326
-        
-        #belgian_system:int = int(str(map.meta["crs"]).split(":")[1])
 
         belgian_system:int = 31370
-
-        #location.address
-
-        #print(location.raw)
-
-        #local_boundingbox = location.raw["boundingbox"]
 
         coord = Coord.conv_coord_system_location(location.latitude,location.longitude,address_system,belgian_system)
 
@@ -83,8 +73,8 @@ class Coord():
                 if result == 0:
                     path = 0
                 else:
-                    path = e["Path"]
-                    print("The file is : ",e["Name"])
+                    path = e["DSM Path"],e["DTM Path"]
+                    print("The file is : ",e["DSM"])
                     break
 
 
