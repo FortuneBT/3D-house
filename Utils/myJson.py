@@ -1,67 +1,86 @@
 import rasterio as rio
 import json
+from typing import List
 
 class myJson():
 
-    def create_coord_json(self):
+    def create_coord_json():
 
-        mylist = self.create_list_files()
+        mylist = myJson.create_list_files()
+
+        dsm = mylist[0]
+        dtm = mylist[1]
 
         data = dict()
         data["parameters"] = []
 
-        for elem in mylist:
+        for x,elem in enumerate(dsm):
 
-            myfile = rio.open(elem)
+            myfileDSM = rio.open(elem)
+            myfileDTM = rio.open(dtm[x])
 
-            path = myfile.name
+            pathDSM = myfileDSM.name
+            pathDTM = myfileDTM.name
 
-            file = path.split("/")[8]
-            file = file.split(".")[0]
+            fileDSM = pathDSM.split("/")[8]
+            fileDSM = fileDSM.split(".")[0]
+            fileDTM = pathDTM.split("/")[8]
+            fileDTM = fileDTM.split(".")[0]
 
-            big_left:float = myfile.bounds.left
-            big_top:float = myfile.bounds.top
-            big_bottom:float= myfile.bounds.bottom
-            big_right:float = myfile.bounds.right
+            big_left:float = myfileDSM.bounds.left
+            big_top:float = myfileDSM.bounds.top
+            big_bottom:float= myfileDSM.bounds.bottom
+            big_right:float = myfileDSM.bounds.right
 
             data["parameters"].append({
                 "Left" : big_left,
                 "Bottom" : big_bottom,
                 "Right" : big_right,
                 "Top" : big_top,
-                "Name" : file,
-                "Path" : path
+                "DSM" : fileDSM,
+                "DTM" : fileDTM,
+                "DSM Path" : pathDSM,
+                "DTM Path" : pathDTM
             })
 
         with open("mycoord.json", "w") as mydata:
             json.dump(data,mydata)
     
 
-def read_json():
-    with open("mycoord.json") as file:
-        data = json.load(file)
-    
-    return data["parameters"]
+    def read_json():
+        with open("mycoord.json") as file:
+            data = json.load(file)
+        
+        return data["parameters"]
 
 
 
-def create_list_files():
-    """
-    Create a variable that contains the liste of files that i have to read
-    """
+    def create_list_files():
+        """
+        Create a variable that contains the liste of files that i have to read
+        """
 
-    my_files:List= []
-    mynumber:str = ""
-    extension = ".tif"
+        dsm:List= []
+        dtm:List= []
+        
+        my_files:List= []
 
-    for x in range(1,44):
-        if x < 10:
-            mynumber = "0"+str(x)
-            mypath = f"zip+file:.///geo/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
-        else:
-            mynumber = str(x)
-            mypath = f"zip+file:.///geo/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
+        mynumber:str = ""
+        extension = ".tif"
 
-        my_files.append(f"{mypath}DHMVIIDSMRAS1m_k{mynumber}{extension}")
+        for x in range(1,44):
+            if x < 10:
+                mynumber = "0"+str(x)
+                mypathDSM = f"zip+file:..///Regions-Brux-Fland/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
+                mypathDTM = f"zip+file:..///Regions-Brux-Fland/DHMVIIDTMRAS1m_k{mynumber}.zip!/GeoTIFF/"
+            else:
+                mynumber = str(x)
+                mypathDSM = f"zip+file:..///Regions-Brux-Fland/DHMVIIDSMRAS1m_k{mynumber}.zip!/GeoTIFF/"
+                mypathDTM = f"zip+file:..///Regions-Brux-Fland/DHMVIIDTMRAS1m_k{mynumber}.zip!/GeoTIFF/"
 
-    return my_files
+            dsm.append(f"{mypathDSM}DHMVIIDSMRAS1m_k{mynumber}{extension}")
+            dtm.append(f"{mypathDTM}DHMVIIDTMRAS1m_k{mynumber}{extension}")
+        
+        my_files = dsm,dtm
+
+        return my_files
