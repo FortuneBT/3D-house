@@ -28,7 +28,7 @@ def _deactivate(args):
 _deactivate(["nondestructive"])
 aliases["deactivate"] = _deactivate
 
-$VIRTUAL_ENV = r"/home/becode2/Python/Projets/MyHouse/env"
+$VIRTUAL_ENV = r"/home/becode2/Python/Projets/3D-house/env"
 
 $_OLD_VIRTUAL_PATH = $PATH
 $PATH = $PATH[:]

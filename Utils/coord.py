@@ -10,6 +10,7 @@ class Coord():
         
         self.lat = 0
         self.lon = 0
+        self.address = None
 
     def conv_coord_system_location(latitude:float,longitude:float,address_system:int,belgian_system:int)->List[float]:
 
@@ -26,7 +27,7 @@ class Coord():
 
 
 
-    def create_coord()-> List[float]:
+    def create_coord(self)-> List[float]:
 
         location = None
 
@@ -40,6 +41,8 @@ class Coord():
 
             if location == None:
                 print("This address is not found !!!")
+        
+        self.address = location
 
         address_system:int = 4326
 
@@ -52,7 +55,7 @@ class Coord():
 
     def process_input(self)-> List:
 
-        lat,lon = Coord.create_coord()
+        lat,lon = self.create_coord()
 
         sbox = Box.create_s_box(lat,lon,100,100)
 

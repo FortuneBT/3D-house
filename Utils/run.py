@@ -19,51 +19,45 @@ from typing import Tuple
 
 class Run():
     
-    def __init__(self):
-        self.time_application = False
-        self.begin = 0
-        self.end = 0
-        self.coord = []
+    def __init__(self) -> None:
+
+        self.time_application:bool = False
+        self.begin:float = 0
+        self.end:float = 0
+        self.latitude:float = 0
+        self.longitude:float = 0
+        self.pathDSM:str = None
+        self.pathDTM:str = None
+        self.dsm:rio = None
+        self.dtm:rio = None
+        self.address:str = ""
+        self.sbox:Box = None
+        self.bbox:Box = None
+        self.mywin = None
 
 
     def start(self):
 
         self.begin = time.perf_counter()
 
-        coord = Coord()
+        result = self.input()
 
-        sbox:Box = coord.process_input()
-
-        self.coord.append(coord.lat)
-        self.coord.append(coord.lon)
-
-
-        """pathDTM is needed to create CHM"""
-        pathDSM,pathDTM = Coord.inside_files(sbox)
-
-        print(pathDSM)
-
-        if pathDSM != 0:
+        if result != 0:
             
-            dsm = rio.open(pathDSM)
+            chm_read = self.create_chm()
 
-            mywin = Front.cropped_window(sbox,dsm)
-
-            """Canopy Height Model (CHM)"""
-            chm_read = self.chmed(dsm,pathDTM,mywin) 
-            """crop_tif()"""
-
-            """the 2D map version"""
-            Front.show_2D(chm_read) # 
+            Front.show_2D(chm_read) 
 
             Front.show_3D(chm_read)
 
-            dsm.close()
+            self.dsm.close()
+            self.dtm.close()
 
             self.end = time.perf_counter()
         else:
             print("the address is not in those maps!")
             self.end = time.perf_counter()
+
 
         if self.time_application == True:
             whole_time = round(self.end - self.begin,2)
@@ -71,21 +65,53 @@ class Run():
 
 
 
-    def chmed(self, dsm, pathDTM, mywin):
+    def chmed(self, mywin):
 
-        pathFILE = "../Regions-Brux-Fland/test.tif"
+        self.dtm = rio.open(self.pathDTM)
 
-        dtm = rio.open(pathDTM)
-
-        chm_read = dsm.read(1,window=mywin) - dtm.read(1,window=mywin)
+        chm_read = self.dsm.read(1,window=mywin) - self.dtm.read(1,window=mywin)
         
         return chm_read
-
-
 
     def mytime(self):
 
         self.time_application = True
+
+
+
+    def get_coordinate(self, coordinate):
+
+            self.address = coordinate.address
+
+            self.latitude = coordinate.lat
+
+            self.longitude = coordinate.lon
+
+
+
+    def input(self):
+
+        coord = Coord()
+
+        self.sbox:Box = coord.process_input()
+
+        self.get_coordinate(coord)
+
+        self.pathDSM,self.pathDTM = Coord.inside_files(self.sbox)
+
+        return self.pathDSM
+
+    
+    def create_chm(self):
+
+        self.dsm = rio.open(self.pathDSM)
+
+        self.mywin = Front.cropped_window(self.sbox,self.dsm)
+
+        """Canopy Height Model (CHM)"""
+        chm_read = self.chmed(self.mywin) 
+
+        return chm_read
         
 
 def crop_tif(data, tif_index, poly, shape_cut=True) -> Tuple[np.ndarray]:

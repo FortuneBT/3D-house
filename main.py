@@ -9,3 +9,6 @@ app = Run()
 app.mytime()
 
 app.start() 
+
+
+print(str(app.address).split(",")[5])
