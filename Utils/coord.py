@@ -6,6 +6,11 @@ from Utils.myJson import myJson
 
 class Coord():
 
+    def __init__(self):
+        
+        self.lat = 0
+        self.lon = 0
+
     def conv_coord_system_location(latitude:float,longitude:float,address_system:int,belgian_system:int)->List[float]:
 
         coord_address:List = []
@@ -21,28 +26,38 @@ class Coord():
 
 
 
-    def create_coord(my_address:str)-> List[float]:
+    def create_coord()-> List[float]:
 
-        address = my_address
+        location = None
 
-        geolocator = Nominatim(user_agent="myhome")
+        while location == None:
 
-        location = geolocator.geocode(address)
+            address:str = input("Wich address do you want to see ? : ")
+
+            geolocator = Nominatim(user_agent="myhome")
+
+            location = geolocator.geocode(address)
+
+            if location == None:
+                print("This address is not found !!!")
 
         address_system:int = 4326
 
         belgian_system:int = 31370
 
         coord = Coord.conv_coord_system_location(location.latitude,location.longitude,address_system,belgian_system)
-
+        
         return coord
 
 
-    def process_input(my_address)-> List:
+    def process_input(self)-> List:
 
-        lat,lon = Coord.create_coord(my_address)
+        lat,lon = Coord.create_coord()
 
-        sbox = Box.create_s_box(lat,lon,30,30)
+        sbox = Box.create_s_box(lat,lon,100,100)
+
+        self.lat = lat
+        self.lon = lon
 
         return sbox
 

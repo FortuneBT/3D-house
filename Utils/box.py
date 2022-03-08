@@ -1,8 +1,14 @@
 from typing import List
 
 class Box():
-
+    
     def create_b_box(source)->List[float]:
+        """
+        This function is to find the bounds around the map inside the file we're
+        looking into. The rasterio library give the bounds function that give this 
+        informations.
+        source = the raster object given after opening the tiff file
+        """
 
         box:List = []
 
@@ -21,7 +27,14 @@ class Box():
 
 
     def create_s_box(myLatitude:float,myLongitude:float,lat_size:int,lon_size:int)->List[float]:
-
+        """
+        This function create a virtual small box defining the border of the place we want 
+        to locate. The location is given by the latitude and longitude.
+        MyLatitude = the latitude of the address.
+        MyLongitude = the longitude of the address.
+        Lat_size = the space between the center of the location and the horizontal axis
+        lon_size = the space between the center of the location and the vertical axis
+        """
         box:List = []
 
         lat_address = myLatitude
@@ -41,6 +54,10 @@ class Box():
 
 
     def test_box(big_box,small_box):
+        """
+        This function will test if the small box (representing the box around the location) is
+        inside the big box that represent the bounds around the map.
+        """
 
         result:bool = False
 
