@@ -14,7 +14,8 @@ from rasterio.crs import CRS
 from rasterio.transform import from_origin
 from rasterio.windows import Window
 import time
-
+import rioxarray as rxr
+from typing import Tuple
 
 class Run():
     
@@ -22,19 +23,23 @@ class Run():
         self.time_application = False
         self.begin = 0
         self.end = 0
+        self.coord = []
 
 
     def start(self):
 
         self.begin = time.perf_counter()
 
-        myaddress:str = input("Wich address do you want to see ? : ")
+        coord = Coord()
 
-        sbox:Box = Coord.process_input(myaddress)
+        sbox:Box = coord.process_input()
 
+        self.coord.append(coord.lat)
+        self.coord.append(coord.lon)
+
+
+        """pathDTM is needed to create CHM"""
         pathDSM,pathDTM = Coord.inside_files(sbox)
-
-        pathTEST = "../Regions-Brux-Fland/test.tif"
 
         print(pathDSM)
 
@@ -42,17 +47,19 @@ class Run():
             
             dsm = rio.open(pathDSM)
 
-            """Canopy Height Model"""
-            #dsm = self.chmed(dsm,pathDTM,pathTEST) 
-
             mywin = Front.cropped_window(sbox,dsm)
 
-            """the 2D map version"""
-            #Front.show_2D(source,mywin) # 
+            """Canopy Height Model (CHM)"""
+            chm_read = self.chmed(dsm,pathDTM,mywin) 
+            """crop_tif()"""
 
-            Front.show_3D(dsm,mywin)
+            """the 2D map version"""
+            Front.show_2D(chm_read) # 
+
+            Front.show_3D(chm_read)
+
             dsm.close()
-            print("DONE !!!!!!!!!")
+
             self.end = time.perf_counter()
         else:
             print("the address is not in those maps!")
@@ -64,23 +71,15 @@ class Run():
 
 
 
-    def chmed(self, dsm, pathDTM, pathFILE):
+    def chmed(self, dsm, pathDTM, mywin):
+
+        pathFILE = "../Regions-Brux-Fland/test.tif"
 
         dtm = rio.open(pathDTM)
 
-        chm = dsm.read() - dtm.read()
-
-        kwargs = dtm.meta
-
-        file = rio.open(pathFILE, 'w', **kwargs) 
+        chm_read = dsm.read(1,window=mywin) - dtm.read(1,window=mywin)
         
-        file.write(chm)
-
-        dsm.close()
-
-        dsm = rio.open(pathFILE)
-
-        return dsm
+        return chm_read
 
 
 
@@ -88,3 +87,28 @@ class Run():
 
         self.time_application = True
         
+
+def crop_tif(data, tif_index, poly, shape_cut=True) -> Tuple[np.ndarray]:
+
+    DSM = rxr.open_rasterio(data['DSM_list'][tif_index],masked=True)
+    DTM = rxr.open_rasterio(data['DTM_list'][tif_index],masked=True)
+    
+    # First clipping with bounds optimizes the processing
+    left, bottom, right, top = poly.bounds
+    DSM_clip = DSM.rio.clip_box(left, bottom, right, top)
+    DTM_clip = DTM.rio.clip_box(left, bottom, right, top)
+
+    if shape_cut:
+        DSM_clip = DSM_clip.rio.clip([poly.__geo_interface__])
+        DSM_clip = np.nan_to_num(DSM_clip, nan=0)
+
+        DTM_clip = DTM_clip.rio.clip([poly.__geo_interface__])
+        DTM_clip = np.nan_to_num(DTM_clip, nan=0)
+    
+    # Close the .tif files to avoid memory leaks
+    DSM.close()
+    DTM.close()
+
+    result = DSM_clip - DTM_clip
+    
+    return result
