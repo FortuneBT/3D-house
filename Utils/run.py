@@ -34,6 +34,7 @@ class Run():
         self.sbox:Box = None
         self.bbox:Box = None
         self.mywin = None
+        self.chm = None
 
 
     def start(self):
@@ -44,11 +45,11 @@ class Run():
 
         if result != 0:
             
-            chm_read = self.create_chm()
+            self.chm = self.create_chm()
 
-            Front.show_2D(chm_read) 
+            Front.show_2D(self.chm) 
 
-            Front.show_3D(chm_read)
+            Front.show_3D(self.chm)
 
             self.dsm.close()
             self.dtm.close()
@@ -65,13 +66,15 @@ class Run():
 
 
 
-    def chmed(self, mywin):
+    def format_chm(self, mywin):
 
         self.dtm = rio.open(self.pathDTM)
 
         chm_read = self.dsm.read(1,window=mywin) - self.dtm.read(1,window=mywin)
         
         return chm_read
+
+
 
     def mytime(self):
 
@@ -101,6 +104,7 @@ class Run():
 
         return self.pathDSM
 
+
     
     def create_chm(self):
 
@@ -109,10 +113,26 @@ class Run():
         self.mywin = Front.cropped_window(self.sbox,self.dsm)
 
         """Canopy Height Model (CHM)"""
-        chm_read = self.chmed(self.mywin) 
+        chm_read = self.format_chm(self.mywin) 
 
         return chm_read
         
+    def begin(self):
+
+        result = self.input()
+
+        if result != 0:
+            
+            self.chm = self.create_chm()
+
+            self.dsm.close()
+            self.dtm.close()
+
+    def show2d(self):
+        Front.show_2D(self.chm)
+
+    def show3d(self):
+        Front.show_3D(self.chm)
 
 def crop_tif(data, tif_index, poly, shape_cut=True) -> Tuple[np.ndarray]:
 

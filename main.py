@@ -10,5 +10,5 @@ app.mytime()
 
 app.start() 
 
-
-print(str(app.address).split(",")[5])
+"""print(app.address)
+print(str(app.address).split(",")[5])"""
