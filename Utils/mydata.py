@@ -12,7 +12,7 @@ class Data():
         self.process_data()
         
 
-    def price_mean_by_region(self,mun):
+    def price_mean_by_region(self):
 
         return self.mydata.loc[:,["Municipality","Region","Price"]].groupby(["Region"]).mean().sort_values(by="Price", ascending=False).tail(20)
 
@@ -31,8 +31,8 @@ class Data():
     def process_data(self):
 
         """"""
-        belgium = json.load(open("../data/postal-codes-belgium.geojson", "r"))
-        maisons = pd.read_csv("../data/housing_data.csv",dtype={"Bedrooms": "Int64"})
+        belgium = json.load(open("./data/postal-codes-belgium.geojson", "r"))
+        maisons = pd.read_csv("./data/housing_data.csv",dtype={"Bedrooms": "Int64"})
         belgium["features"][1]
         maisons.dropna(axis=1,thresh=7000, how="any", inplace=True)
 

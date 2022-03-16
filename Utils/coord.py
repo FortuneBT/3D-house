@@ -27,13 +27,14 @@ class Coord():
 
 
 
-    def create_coord(self)-> List[float]:
+    def create_coord(self,address)-> List[float]:
 
         location = None
 
         while location == None:
 
-            address:str = input("Wich address do you want to see ? : ")
+            """if address == None:
+                address:str = input("Wich address do you want to see ? : ")"""
 
             geolocator = Nominatim(user_agent="myhome")
 
@@ -53,11 +54,11 @@ class Coord():
         return coord
 
 
-    def process_input(self)-> List:
+    def process_input(self,address,size)-> List:
 
-        lat,lon = self.create_coord()
+        lat,lon = self.create_coord(address)
 
-        sbox = Box.create_s_box(lat,lon,100,100)
+        sbox = Box.create_s_box(lat,lon,size,size)
 
         self.lat = lat
         self.lon = lon

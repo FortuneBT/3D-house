@@ -6,6 +6,9 @@ import numpy as np
 
 class Front():
 
+    fig_2D = None
+    fig_3D = None
+
     def cropped_window(small_box,source):
         """
         This function will cropped a smaller windows. It will take a small part of the map
@@ -24,13 +27,17 @@ class Front():
         return mywin
 
 
-    def show_2D(chm_read):
+    def show_2D(self,chm_read):
         
-        plt.imshow(chm_read)
-        plt.show()
+        fig = plt.imshow(chm_read)
+        #plt.show()
+
+        self.fig_2D = fig
+        return fig
 
 
-    def show_3D(myz)-> None:
+
+    def show_3D(self,myz):
 
         """myz = map.read(1,window=mywin)"""
 
@@ -52,6 +59,10 @@ class Front():
         
         fig = go.Figure(data=[go.Surface(x=X,y=Y,z=myz)]) 
 
-        fig.update_layout(scene = {"aspectratio": {"x": (N/N), "y":(N/M), "z": np.max(arr)/M}})
+        fig.update_layout(scene = {"aspectratio": {"x": (N/N), "y":(N/M), "z": np.max(arr)/M}},width=800,height=800,autosize=False)
 
-        fig.show()
+        #fig.show()
+
+        self.fig_3D = fig
+
+        return fig

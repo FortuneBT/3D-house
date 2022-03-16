@@ -35,6 +35,8 @@ class Run():
         self.bbox:Box = None
         self.mywin = None
         self.chm = None
+        self.fig2 = None
+        self.fig3 = None
 
 
     def start(self):
@@ -47,9 +49,14 @@ class Run():
             
             self.chm = self.create_chm()
 
-            Front.show_2D(self.chm) 
+            front = Front()
 
-            Front.show_3D(self.chm)
+            front.show_2D(self.chm) 
+
+            front.show_3D(self.chm)
+
+            self.fig2 = front.fig_2D
+            self.fig3 = front.fig_3D
 
             self.dsm.close()
             self.dtm.close()
@@ -92,11 +99,11 @@ class Run():
 
 
 
-    def input(self):
+    def input(self,address,size):
 
         coord = Coord()
 
-        self.sbox:Box = coord.process_input()
+        self.sbox:Box = coord.process_input(address,size)
 
         self.get_coordinate(coord)
 
@@ -117,9 +124,9 @@ class Run():
 
         return chm_read
         
-    def begin(self):
+    def beginning(self,address,size):
 
-        result = self.input()
+        result = self.input(address,size)
 
         if result != 0:
             
@@ -128,11 +135,18 @@ class Run():
             self.dsm.close()
             self.dtm.close()
 
+        return self.chm
+
+
     def show2d(self):
-        Front.show_2D(self.chm)
+        front = Front()
+        fig = front.show_2D(self.chm)
+        return fig
 
     def show3d(self):
-        Front.show_3D(self.chm)
+        front = Front()
+        fig = front.show_3D(self.chm)
+        return fig
 
 def crop_tif(data, tif_index, poly, shape_cut=True) -> Tuple[np.ndarray]:
 
